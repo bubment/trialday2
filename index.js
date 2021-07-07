@@ -1,23 +1,32 @@
 const express = require("express");
 const async = require("async");
 const mysql = require('mysql');
+const log4js = require("log4js");
+const config = require('config');
+log4js.configure({
+  appenders: { error: { type: "file", filename: "log/error.log" } },
+  categories: { default: { appenders: ["error"], level: "trace" } }
+});
+const logger = log4js.getLogger("error");
 
-const PORT = 1337
+const PORT = config.get("appPort")
+const MYSQLDBUSER = config.get("mysql.user")
+const MYSQLDBPASSWORD = config.get("mysql.password")
 
 var connection = mysql.createConnection({
     host     : 'localhost',
-    user     : 'testuser',
-    password : 'testpassword',
+    user     : MYSQLDBUSER,
+    password : MYSQLDBPASSWORD,
     database : 'trialday2'
   });
 
   connection.connect(function(err) {
     if (err) {
-      console.error('error connecting: ' + err.stack);
-      return;
+        logger.error(err);
+        console.error('error connecting: ' + err.stack);
+        return;
     }
-   
-    console.log('connected as id ' + connection.threadId);
+    console.log('Database connection was successfull');
   });
 
 let app = express();
@@ -29,6 +38,7 @@ app.use(express.json());
 app.get("/getPosts",(req,res)=>{
     connection.query('SELECT u.username,p.id,p.title FROM post p LEFT JOIN user u ON u.id = p.userId', function (error, results, fields) {
         if(error){
+            logger.error(error);
             res.status(503).json({eventCode:1})
         }else{
             res.status(200).json({posts:results})
@@ -48,6 +58,7 @@ app.post("/getPostDetails",(req,res)=>{
         let getPostInfo = function(callback){
             connection.query('SELECT u.username,p.title,p.body FROM post p LEFT JOIN user u ON u.id = p.userId WHERE p.id = ?',[reqBody.postId], function (error, results, fields) {
                 if(error){
+                    logger.error(error);
                     callback(error);
                 }else{
                     retVal.postInfo = results[0] ? results[0] : {};
@@ -59,6 +70,7 @@ app.post("/getPostDetails",(req,res)=>{
         let getComments = function(callback){
             connection.query('SELECT name,body FROM comment WHERE postId = ?',[reqBody.postId], function (error, results, fields) {
                 if(error){
+                    logger.error(error);
                     callback(error);
                 }else{
                     retVal.comments = results;
@@ -90,6 +102,7 @@ app.get("/getPhotosByAlbums",(req,res)=>{
     let getAlbums = function(callback){
         connection.query('SELECT id, title FROM album', function (error, results, fields) {
             if(error){
+                logger.error(error);
                 callback(error);
             }else{
                 results.forEach(album => {
@@ -104,6 +117,7 @@ app.get("/getPhotosByAlbums",(req,res)=>{
     let getPhotos = function(callback){
         connection.query('SELECT albumId,thumbnailUrl FROM photo', function (error, results, fields) {
             if(error){
+                logger.error(error);
                 callback(error);
             }else{
                 results.forEach(photo => {
