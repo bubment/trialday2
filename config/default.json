@@ -1,0 +1,9 @@
+{
+    "appPort":1337,
+    "mysql":{
+        "user":"testuser",
+        "password":"testpassword"
+    }
+
+
+}
