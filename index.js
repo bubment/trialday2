@@ -11,7 +11,14 @@ var connection = mysql.createConnection({
     database : 'trialday2'
   });
 
-  connection.connect();
+  connection.connect(function(err) {
+    if (err) {
+      console.error('error connecting: ' + err.stack);
+      return;
+    }
+   
+    console.log('connected as id ' + connection.threadId);
+  });
 
 let app = express();
 
@@ -41,7 +48,7 @@ app.post("/getPostDetails",(req,res)=>{
         let getPostInfo = function(callback){
             connection.query('SELECT u.username,p.title,p.body FROM post p LEFT JOIN user u ON u.id = p.userId WHERE p.id = ?',[reqBody.postId], function (error, results, fields) {
                 if(error){
-                    callback(err);
+                    callback(error);
                 }else{
                     retVal.postInfo = results[0] ? results[0] : {};
                     callback();
@@ -50,10 +57,9 @@ app.post("/getPostDetails",(req,res)=>{
         }
 
         let getComments = function(callback){
-            // SELECT name,body FROM comment WHERE postId = 2
             connection.query('SELECT name,body FROM comment WHERE postId = ?',[reqBody.postId], function (error, results, fields) {
                 if(error){
-                    callback(err);
+                    callback(error);
                 }else{
                     retVal.comments = results;
                     callback();
@@ -84,7 +90,7 @@ app.get("/getPhotosByAlbums",(req,res)=>{
     let getAlbums = function(callback){
         connection.query('SELECT id, title FROM album', function (error, results, fields) {
             if(error){
-                callback(err);
+                callback(error);
             }else{
                 results.forEach(album => {
                     album["photos"] = [];
@@ -98,7 +104,7 @@ app.get("/getPhotosByAlbums",(req,res)=>{
     let getPhotos = function(callback){
         connection.query('SELECT albumId,thumbnailUrl FROM photo', function (error, results, fields) {
             if(error){
-                callback(err);
+                callback(error);
             }else{
                 results.forEach(photo => {
                     for (let i = 0; i < retVal.length; i++) {

@@ -13,6 +13,7 @@
 
     </template>
 </div>
+<h2 style="margin: 30px 30px" v-else v-if="!isLoaderOn">There was a problem durring the server communication :(</h2>
 
   <Loader v-if="isLoaderOn"/>
 </template>
