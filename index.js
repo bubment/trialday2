@@ -1,6 +1,5 @@
 const express = require("express");
 const async = require("async");
-const fetch = require('node-fetch');
 const mysql = require('mysql');
 
 const PORT = 1337
@@ -73,11 +72,58 @@ app.post("/getPostDetails",(req,res)=>{
                 }
             }
         )
-
-
     }else{
         res.status(400).json({message:"Missing arguments in request body"})
     }
+})
+
+app.get("/getPhotosByAlbums",(req,res)=>{
+
+    let retVal = []
+
+    let getAlbums = function(callback){
+        connection.query('SELECT id, title FROM album', function (error, results, fields) {
+            if(error){
+                callback(err);
+            }else{
+                results.forEach(album => {
+                    album["photos"] = [];
+                    retVal.push(album);
+                });
+                callback();
+            }
+          });
+    }
+
+    let getPhotos = function(callback){
+        connection.query('SELECT albumId,thumbnailUrl FROM photo', function (error, results, fields) {
+            if(error){
+                callback(err);
+            }else{
+                results.forEach(photo => {
+                    for (let i = 0; i < retVal.length; i++) {
+                        if (photo.albumId == retVal[i].id) {
+                            retVal[i].photos.push(photo.thumbnailUrl)
+                            break;
+                        }
+                        
+                    }
+                });
+                callback();
+            }
+          });
+    }
+
+    async.series(
+        [getAlbums,getPhotos],
+        function(err){
+            if (err) {
+                res.status(500).json({eventCode:1})
+            }else{
+                res.status(200).json({albums:retVal});
+            }
+        }
+    )
 })
 
 app.route('/*').get((req, res) => {res.sendFile(__dirname + '/frontend/dist/index.html')});
