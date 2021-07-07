@@ -15,6 +15,7 @@
     </template>
   </tbody>
 </table>
+<div v-else v-if="!isLoaderOn">There was a problem durring the server communication :(</div>
   <Loader v-if="isLoaderOn"/>
 </template>
 
@@ -37,7 +38,7 @@ export default {
       fetch("http://localhost:1337/getPosts")
       .then(res => res.json())
       .then(result => {
-        this.posts = result.posts
+        this.posts = result.posts ? result.posts : []
       })
       .catch(err => this.userMessage(err))
       .finally(() => this.isLoaderOn = false);

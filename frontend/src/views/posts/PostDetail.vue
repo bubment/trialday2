@@ -58,8 +58,8 @@ export default {
       fetch("http://localhost:1337/getPostDetails",options)
       .then(res => res.json())
       .then(result => {
-        this.postInfo = result.postDetails.postInfo
-        this.comments = result.postDetails.comments
+        this.postInfo = result.postDetails.postInfo ? result.postDetails.postInfo : {}
+        this.comments = result.postDetails.comments ? result.postDetails.comments : []
       })
       .catch(err => {
         console.log("Error:",err)
