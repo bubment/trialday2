@@ -24,7 +24,7 @@
             </table>
       </div>
   </div>
-  <div v-else>
+  <div v-else v-if="!isLoaderOn">
       <h1>The post you are looking for is no longer exists or never existed :(</h1>
   </div>
   <Loader v-if="isLoaderOn"/>

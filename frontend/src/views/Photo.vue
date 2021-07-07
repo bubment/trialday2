@@ -5,7 +5,7 @@
             <h2>{{ album.title }}</h2><br>
             <div class="row">
                 <template v-for="photo in album.photos">
-                    <div class="col-2 col-xs-4"><img :src="photo"></div>
+                    <div class="col-2 col-xs-4"><img :src="photo" class="mb10"></div>
                 </template>
             </div>
             <br>
@@ -44,3 +44,8 @@ export default {
     }
 }
 </script>
+<style scoped>
+.mb10{
+    margin-bottom: 10px;
+}
+</style>
