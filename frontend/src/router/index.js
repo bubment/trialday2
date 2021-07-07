@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import Posts from '../views/posts/Post.vue'
 import PostDetails from '../views/posts/PostDetail.vue'
 import Photo from '../views/Photo.vue'
+import NotFound from '../views/NotFound.vue'
 
 const routes = [
   {
@@ -25,6 +26,12 @@ const routes = [
     name: 'Photo',
     component: Photo
   },
+  {
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFound
+  },
+
 ]
 
 routes.forEach(routeItem =>{ routeItem['props'] = true })
