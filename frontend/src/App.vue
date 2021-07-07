@@ -11,9 +11,9 @@
         <li class="nav-item">
           <router-link :to="{name : 'Posts' }" class="nav-link">Posts</router-link>
         </li>
-        <!-- <li class="nav-item">
-          <router-link :to="{name : 'Home' }" class="nav-link">Home</router-link>
-        </li> -->
+        <li class="nav-item">
+          <router-link :to="{name : 'Photo' }" class="nav-link">Photos</router-link>
+        </li>
       </ul>
     </div>
   </div>
